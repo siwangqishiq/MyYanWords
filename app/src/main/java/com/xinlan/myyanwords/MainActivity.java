@@ -16,15 +16,20 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int SORT_TYPE_NORMAL = 1;
+    public static final int SORT_TYPE_WORD= 2;
+
+
+    private int mSortType = SORT_TYPE_NORMAL;
     private WordsDao mDao;
     private List<Word> wordList;
 
     private ListView mListView;
     private DataAdapter mDapter;
-
     private LayoutInflater mInflater;
-
     private Toolbar mToolbar;
+
+    private MenuItem mSortMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +42,8 @@ public class MainActivity extends AppCompatActivity {
         setTitle("");
 
         mDao = new WordsDao(this);
-        try {
-            wordList = mDao.getWordsList();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
+        wordList = mDao.getWordsList();
+        mSortType = SORT_TYPE_NORMAL;
         mDapter = new DataAdapter();
         mListView.setAdapter(mDapter);
     }
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
+        mSortMenuItem = menu.findItem(R.id.action_resort);
         return true;
     }
 
@@ -108,11 +110,25 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_resort:
+                resortList();
                 return true;
             case R.id.action_settings:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }//end switch
+    }
+
+    private void resortList(){
+        if(mSortType == SORT_TYPE_NORMAL){
+            wordList = mDao.getWordsListBySort();
+            mSortType = SORT_TYPE_WORD;
+            mSortMenuItem.setTitle(R.string.sort_normal);
+        }else if(mSortType == SORT_TYPE_WORD){
+            wordList = mDao.getWordsList();
+            mSortType = SORT_TYPE_NORMAL;
+            mSortMenuItem.setTitle(R.string.sort_charactor);
+        }
+        mDapter.notifyDataSetChanged();
     }
 }//end class

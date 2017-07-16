@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyYanWords</string>
+    <string name="sort_charactor">字母排序</string>
+    <string name="sort_normal">普通排序</string>
 </resources>

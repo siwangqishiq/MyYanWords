@@ -38,9 +38,27 @@ public class WordsDao {
         }
     }
 
-    public List<Word> getWordsList() throws UnsupportedEncodingException {
+    public List<Word> getWordsList() {
         List<Word> list = new ArrayList<Word>();
         Cursor cursor = mDbHelper.getDb().query("words", new String[]{ID, WORD, TRANSLATE, EXTRA, TIME}, null, null, null, null, null);
+        readFromCursorAsList(cursor,list);
+        cursor.close();
+        return list;
+    }
+
+    public List<Word> getWordsListBySort() {
+        List<Word> list = new ArrayList<Word>();
+        Cursor cursor = mDbHelper.getDb().query("words",
+                new String[]{ID, WORD, TRANSLATE, EXTRA, TIME}, null, null, null, null, WORD);
+        readFromCursorAsList(cursor,list);
+        cursor.close();
+        return list;
+    }
+
+    private void readFromCursorAsList(Cursor cursor,List<Word> list){
+        if(cursor==null || list == null)
+            return;
+
         while (cursor.moveToNext()) {
             Word word = new Word();
             word.setId(cursor.getInt(cursor.getColumnIndex(ID)));
@@ -51,9 +69,6 @@ public class WordsDao {
             list.add(word);
             //System.out.println(word);
         }//end while
-        cursor.close();
-
-        return list;
     }
 
     public static String readString(Cursor cursor, String key) {
